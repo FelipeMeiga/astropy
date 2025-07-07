@@ -296,7 +296,7 @@ class AstropyLogger(Logger):
 
         # include the error type in the message.
         if len(value.args) > 0:
-            message = f"{etype.__name__}: {str(value)}"
+            message = f"{etype.__name__}: {value!s}"
         else:
             message = str(etype.__name__)
 
@@ -535,7 +535,7 @@ class AstropyLogger(Logger):
             except OSError as e:
                 warnings.warn(
                     f"log file {log_file_path!r} could not be opened for writing:"
-                    f" {str(e)}",
+                    f" {e!s}",
                     RuntimeWarning,
                 )
             else:

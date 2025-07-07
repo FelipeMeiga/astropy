@@ -221,7 +221,7 @@ class SigmaClip:
             "grow",
         ]
         for attr in attrs:
-            lines.append(f"    {attr}: {repr(getattr(self, attr))}")
+            lines.append(f"    {attr}: {getattr(self, attr)!r}")
         return "\n".join(lines)
 
     @staticmethod

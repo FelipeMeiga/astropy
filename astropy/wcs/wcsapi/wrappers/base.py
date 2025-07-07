@@ -77,7 +77,7 @@ class BaseWCSWrapper(BaseLowLevelWCS, metaclass=abc.ABCMeta):
         pass
 
     def __repr__(self):
-        return f"{object.__repr__(self)}\n{str(self)}"
+        return f"{object.__repr__(self)}\n{self!s}"
 
     def __str__(self):
         return wcs_info_str(self)

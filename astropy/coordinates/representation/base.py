@@ -784,7 +784,7 @@ class BaseRepresentation(BaseRepresentationOrDifferential):
                 expected_key = diff._get_deriv_key(self)
                 if key != expected_key:
                     raise ValueError(
-                        f"For differential object '{repr(diff)}', expected "
+                        f"For differential object '{diff!r}', expected "
                         f"unit key = '{expected_key}' but received key = '{key}'"
                     )
 

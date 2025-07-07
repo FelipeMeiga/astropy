@@ -2075,7 +2075,13 @@ class Model(metaclass=_ModelMeta):
                     new_input = _input.reshape(new_shape)
                 else:
                     pivot = _input.ndim - len(max_param_shape) - 1
-                    new_input = np.rollaxis(_input, model_set_axis_input, pivot + 1)
+                    axis = model_set_axis_input
+                    start = pivot + 1
+                    if start <= axis:
+                        dest = start
+                    else:
+                        dest = start - 1
+                    new_input = np.moveaxis(_input, axis, dest)
             pivots.append(pivot)
             reshaped.append(new_input)
 
@@ -2795,7 +2801,7 @@ class Model(metaclass=_ModelMeta):
                 "must have shapes that are mutually compatible according "
                 "to the broadcasting rules."
             )
-            raise InputParameterError(f"{base_message} {repr(exc)}") from None
+            raise InputParameterError(f"{base_message} {exc!r}") from None
 
     def _param_sets(self, raw=False, units=False):
         """

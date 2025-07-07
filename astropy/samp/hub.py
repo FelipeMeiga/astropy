@@ -883,7 +883,7 @@ class SAMPHubServer:
 
             log.debug(
                 "declare_subscriptions: subscriptions accepted from "
-                f"{private_key} => {str(mtypes)}"
+                f"{private_key} => {mtypes!s}"
             )
 
             for mtype in mtypes:

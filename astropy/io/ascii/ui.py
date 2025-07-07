@@ -693,7 +693,7 @@ def _guess(table, read_kwargs, format, fast_reader):
             _read_trace.append(
                 {
                     "kwargs": copy.deepcopy(guess_kwargs),
-                    "status": f"{err.__class__.__name__}: {str(err)}",
+                    "status": f"{err.__class__.__name__}: {err!s}",
                     "dt": f"{(time.time() - t0) * 1000:.3f} ms",
                 }
             )
@@ -718,7 +718,7 @@ def _guess(table, read_kwargs, format, fast_reader):
         _read_trace.append(
             {
                 "kwargs": copy.deepcopy(read_kwargs),
-                "status": f"{err.__class__.__name__}: {str(err)}",
+                "status": f"{err.__class__.__name__}: {err!s}",
             }
         )
         failed_kwargs.append(read_kwargs)

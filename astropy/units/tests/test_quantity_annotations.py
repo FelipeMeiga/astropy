@@ -175,7 +175,7 @@ def test_wrong_unit3(solarx_unit, solary_unit):
         u.UnitsError,
         match=(
             "Argument 'solary' to function 'myfunc_args' must be in units "
-            f"convertible to '{str(solary_unit)}'."
+            f"convertible to '{solary_unit!s}'."
         ),
     ):
         solarx, solary = myfunc_args(1 * u.arcsec, 100 * u.km)
@@ -278,7 +278,7 @@ def test_kwarg_wrong_unit3(solarx_unit, solary_unit):
         u.UnitsError,
         match=(
             "Argument 'solary' to function 'myfunc_args' must be in "
-            f"units convertible to '{str(solary_unit)}'."
+            f"units convertible to '{solary_unit!s}'."
         ),
     ):
         solarx, solary = myfunc_args(1 * u.arcsec, solary=100 * u.km)

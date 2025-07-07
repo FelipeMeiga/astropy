@@ -89,7 +89,7 @@ def test_wrong_unit(x_input, y_input):
         u.UnitsError,
         match=(
             "Argument 'y' to function 'myfunc_args' must be in units "
-            f"convertible to '{str(y_target)}'."
+            f"convertible to '{y_target!s}'."
         ),
     ):
         x, y = myfunc_args(1 * x_unit, 100 * u.Joule)  # has to be an unspecified unit
@@ -191,7 +191,7 @@ def test_kwarg_wrong_unit(x_input, y_input):
         u.UnitsError,
         match=(
             "Argument 'y' to function 'myfunc_args' must be in units "
-            f"convertible to '{str(y_target)}'."
+            f"convertible to '{y_target!s}'."
         ),
     ):
         x, y = myfunc_args(1 * x_unit, y=100 * u.Joule)

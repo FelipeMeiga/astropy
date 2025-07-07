@@ -549,7 +549,7 @@ def deprecated_renamed_argument(
                 else:
                     raise TypeError(
                         f'cannot replace argument "{new_name[i]}" '
-                        f"of kind {repr(param.kind)}."
+                        f"of kind {param.kind!r}."
                     )
 
         @functools.wraps(function)

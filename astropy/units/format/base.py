@@ -230,7 +230,7 @@ class _ParsingFormatMixin:
             if t.value in registry.aliases:
                 return registry.aliases[t.value]
 
-            raise ValueError(f"At col {t.lexpos}, {str(e)}")
+            raise ValueError(f"At col {t.lexpos}, {e!s}")
 
     @classmethod
     def _fix_deprecated(cls, x: str) -> list[str]:

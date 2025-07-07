@@ -133,7 +133,6 @@ lint.ignore = [
     # Ruff-specific rules (RUF)
     "RUF001",  # ambiguous-unicode-character-string
     "RUF002",  # ambiguous-unicode-character-docstring
-    "RUF010",  # use conversion in f-string
     "RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
 
     # flake8-bandit (S)

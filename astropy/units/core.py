@@ -2072,7 +2072,7 @@ class _UnitMetaClass(type):
                     # should use their name.
                     format_clause = "" if f is Generic else f.name + " "
                     msg = (
-                        f"'{s}' did not parse as {format_clause}unit: {str(e)} "
+                        f"'{s}' did not parse as {format_clause}unit: {e!s} "
                         "If this is meant to be a custom unit, "
                         "define it with 'u.def_unit'. To have it "
                         "recognized inside a file reader or other code, "

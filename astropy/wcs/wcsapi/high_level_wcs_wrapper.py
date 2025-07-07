@@ -82,4 +82,4 @@ class HighLevelWCSWrapper(HighLevelWCSMixin):
         return wcs_info_str(self.low_level_wcs)
 
     def __repr__(self):
-        return f"{object.__repr__(self)}\n{str(self)}"
+        return f"{object.__repr__(self)}\n{self!s}"

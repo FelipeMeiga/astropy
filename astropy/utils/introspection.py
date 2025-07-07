@@ -128,24 +128,26 @@ def minversion(module: ModuleType | str, version: str, inclusive: bool = True) -
         raise ValueError(
             "module argument must be an actual imported "
             "module, or the import name of the module; "
-            f"got {repr(module)}"
+            f"got {module!r}"
         )
 
     if module_version is None:
         try:
             module_version = metadata.version(module_name)
         except metadata.PackageNotFoundError:
-            # Maybe the distribution name is different from package name.
-            # Calling packages_distributions is costly so we do it only
-            # if necessary, as only a few packages don't have the same
-            # distribution name.
             dist_names = packages_distributions()
             module_version = metadata.version(dist_names[module_name][0])
 
+    parsed = Version(module_version)
+
+    if parsed.is_devrelease:
+        return True
+
+    required = Version(version)
     if inclusive:
-        return Version(module_version) >= Version(version)
+        return parsed >= required
     else:
-        return Version(module_version) > Version(version)
+        return parsed > required
 
 
 def find_current_module(

@@ -585,7 +585,7 @@ def table_to_hdu(table, character_as_bytes=False):
                 scale = unit.scale
                 raise UnitScaleError(
                     f"The column '{col.name}' could not be stored in FITS "
-                    f"format because it has a scale '({str(scale)})' that "
+                    f"format because it has a scale '({scale!s})' that "
                     "is not recognized by the FITS standard. Either scale "
                     "the data or change the units."
                 )

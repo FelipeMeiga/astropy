@@ -522,7 +522,7 @@ def _generate_wcs_and_update_header(hdr):
         # cases (malformed header) it could fail...
         log.info(
             "An exception happened while extracting WCS information from "
-            f"the Header.\n{type(exc).__name__}: {str(exc)}"
+            f"the Header.\n{type(exc).__name__}: {exc!s}"
         )
         return hdr, None
     # Test for success by checking to see if the wcs ctype has a non-empty
