@@ -123,16 +123,3 @@ Essas mudanças fazem todo fluxo de agrupamento (group_by) usar o mesmo pipeline
         Adiciona índice em Table, recupera via t.indices[...] e confere que sorted_data() bate com t.argsort().
 
 Todos os testes passaram sem erros, confirmando que TODOS os caminhos (argsort/sort, group_by, índices) usam o pipeline unificado de extração de chaves + np.lexsort.
-7. Conclusão
-
-    Issue #14942 está resolvida no seu fork:
-
-        Código altamente duplicado foi eliminado.
-
-        Ordenação de mixins é consistente e eficiente.
-
-        Manutenção centralizada em um único método (argsort).
-
-    Para levar ao upstream, basta abrir um PR com esses diffs e incluir os testes no repositório principal.
-
-Parabéns — agora todas as ordenações de Table em Astropy estão unificadas!
