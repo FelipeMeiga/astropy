@@ -359,7 +359,7 @@ class Index:
         Returns a list of rows in sorted order based on keys;
         essentially acts as an argsort() on columns.
         """
-        return self.data.sorted_data()
+        return self.table.argsort(self.colnames)
 
     def __getitem__(self, item):
         """

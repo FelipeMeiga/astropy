@@ -12,7 +12,6 @@ import warnings
 from collections import UserDict
 from inspect import signature
 from typing import TYPE_CHECKING, overload
-from table import Table
 
 import numpy as np
 
@@ -29,23 +28,6 @@ if TYPE_CHECKING:
 
 __all__ = ["ellipse_extent", "poly_map_domain"]
 
-def unified_argsort(tbl, keys):
-    if isinstance(keys, (str, tuple)):
-        keys = [keys]
-    sort_keys = []
-    for key in keys:
-        col = tbl[key]
-        sort_keys.extend(col.info.get_sortable_arrays(col))
-    print("hello from unified_argsort")
-    return np.lexsort(sort_keys[::-1])
-
-def patch_table_sorting():
-    Table.argsort = unified_argsort
-
-    def unified_sort(self, keys, *args, **kwargs):
-        idx = self.argsort(keys, *args, **kwargs)
-        return self[idx]
-    Table.sort = unified_sort
 
 def make_binary_operator_eval(oper, f, g):
     """

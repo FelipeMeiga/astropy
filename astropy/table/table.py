@@ -3534,61 +3534,22 @@ class Table:
                 self.add_column(col, name=name, copy=copy)
         _merge_table_meta(self, [self, other], metadata_conflicts="silent")
 
-    def argsort(self, keys=None, kind=None, reverse=False):
-        """
-        Return the indices which would sort the table according to one or
-        more key columns.  This simply calls the `numpy.argsort` function on
-        the table with the ``order`` parameter set to ``keys``.
-
-        Parameters
-        ----------
-        keys : str or list of str
-            The column name(s) to order the table by
-        kind : {'quicksort', 'mergesort', 'heapsort', 'stable'}, optional
-            Sorting algorithm used by ``numpy.argsort``.
-        reverse : bool
-            Sort in reverse order (default=False)
-
-        Returns
-        -------
-        index_array : ndarray, int
-            Array of indices that sorts the table by the specified key
-            column(s).
-        """
+    def _get_sort_keys(self, keys):
         if isinstance(keys, str):
             keys = [keys]
+        sort_keys = []
+        for key in keys:
+            col = self[key]
+            sort_keys.extend(col.info.get_sortable_arrays())
+        return sort_keys
 
-        # use index sorted order if possible
-        if keys is not None:
-            index = get_index(self, names=keys)
-            if index is not None:
-                idx = np.asarray(index.sorted_data())
-                return idx[::-1] if reverse else idx
-
-        kwargs = {}
-        if keys:
-            # For multiple keys return a structured array which gets sorted,
-            # while for a single key return a single ndarray.  Sorting a
-            # one-column structured array is slower than ndarray (e.g. a
-            # factor of ~6 for a 10 million long random array), and much slower
-            # for in principle sortable columns like Time, which get stored as
-            # object arrays.
-            if len(keys) > 1:
-                kwargs["order"] = keys
-                data = self.as_array(names=keys)
-            else:
-                data = self[keys[0]]
+    def argsort(self, keys=None, kind=None, reverse=False):
+        sort_keys = self._get_sort_keys(keys)
+        if not sort_keys:
+            idx = np.arange(len(self))
         else:
-            # No keys provided so sort on all columns.
-            data = self.as_array()
-
-        if kind:
-            kwargs["kind"] = kind
-
-        # np.argsort will look for a possible .argsort method (e.g., for Time),
-        # and if that fails cast to an array and try sorting that way.
-        idx = np.argsort(data, **kwargs)
-
+            idx = np.lexsort(sort_keys[::-1])
+        
         return idx[::-1] if reverse else idx
 
     def sort(self, keys=None, *, kind=None, reverse=False):

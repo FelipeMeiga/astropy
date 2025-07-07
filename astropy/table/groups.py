@@ -18,24 +18,10 @@ def table_group_by(table, keys):
 
 
 def _table_group_by(table, keys):
-    """
-    Get groups for ``table`` on specified ``keys``.
-
-    Parameters
-    ----------
-    table : `Table`
-        Table to group
-    keys : str, list of str, `Table`, or Numpy array
-        Grouping key specifier
-
-    Returns
-    -------
-    grouped_table : Table object with groups attr set accordingly
-    """
     from .serialize import represent_mixins_as_columns
+    from .index import get_index_by_names
     from .table import Table
 
-    # Pre-convert string to tuple of strings, or Table to the underlying structured array
     if isinstance(keys, str):
         keys = (keys,)
 
@@ -44,16 +30,11 @@ def _table_group_by(table, keys):
             if name not in table.colnames:
                 raise ValueError(f"Table does not have key column {name!r}")
             if table.masked and np.any(table[name].mask):
-                raise ValueError(
-                    f"Missing values in key column {name!r} are not allowed"
-                )
+                raise ValueError(f"Missing values in key column {name!r} are not allowed")
 
-        # Make a column slice of the table without copying
         table_keys = table.__class__([table[key] for key in keys], copy=False)
-
-        # If available get a pre-existing index for these columns
         table_index = get_index_by_names(table, keys)
-        grouped_by_table_cols = True
+        grouped_by_table_cols = True if table_index is not None else False
 
     elif isinstance(keys, (np.ndarray, Table)):
         table_keys = keys
@@ -71,38 +52,23 @@ def _table_group_by(table, keys):
             f"but got {type(keys)}"
         )
 
-    # TODO: don't use represent_mixins_as_columns here, but instead ensure that
-    # keys_sort.argsort(kind="stable") works for all columns (including mixins).
-
-    # If there is not already an available index and table_keys is a Table then ensure
-    # that all cols (including mixins) are in a form that can sorted with the code below.
-    if not table_index and isinstance(table_keys, Table):
-        table_keys_sort = represent_mixins_as_columns(table_keys)
-    else:
-        table_keys_sort = table_keys
-
-    # Get the argsort index `idx_sort`, accounting for particulars
-    # take advantage of index internal sort if possible
     if table_index is not None:
         idx_sort = table_index.sorted_data()
     else:
-        idx_sort = table_keys_sort.argsort(kind="stable")
+        idx_sort = table.argsort(keys)
 
-    # Finally do the actual sort of table_keys values
     table_keys = table_keys[idx_sort]
 
-    # Get all keys
     diffs = np.concatenate(([True], table_keys[1:] != table_keys[:-1], [True]))
     indices = np.flatnonzero(diffs)
 
-    # Make a new table and set the _groups to the appropriate TableGroups object.
-    # Take the subset of the original keys at the indices values (group boundaries).
     out = table.__class__(table[idx_sort])
     if len(table) == 0:
         out_keys = table_keys
         indices = np.array([], dtype=int)
     else:
         out_keys = table_keys[indices[:-1]]
+
     if isinstance(out_keys, Table):
         out_keys.meta["grouped_by_table_cols"] = grouped_by_table_cols
     out._groups = TableGroups(out, indices=indices, keys=out_keys)
@@ -111,54 +77,25 @@ def _table_group_by(table, keys):
 
 
 def column_group_by(column, keys):
-    """
-    Get groups for ``column`` on specified ``keys``.
-
-    Parameters
-    ----------
-    column : Column object
-        Column to group
-    keys : Table or Numpy array of same length as col
-        Grouping key specifier
-
-    Returns
-    -------
-    grouped_column : Column object with groups attr set accordingly
-    """
-    from .serialize import represent_mixins_as_columns
     from .table import Table
 
-    # TODO: don't use represent_mixins_as_columns here, but instead ensure that
-    # keys_sort.argsort(kind="stable") works for all columns (including mixins).
-
     if isinstance(keys, Table):
-        keys_sort = represent_mixins_as_columns(keys)
+        idx_sort = keys.argsort()
     else:
-        keys_sort = keys
+        idx_sort = np.argsort(keys)
 
-    if len(keys_sort) != len(column):
+    if len(idx_sort) != len(column):
         raise ValueError(
-            f"Input keys array length {len(keys)} does not match "
-            f"column length {len(column)}"
+            f"Length of sorted index ({len(idx_sort)}) does not match column length ({len(column)})"
         )
 
-    try:
-        idx_sort = keys_sort.argsort(kind="stable")
-    except AttributeError:
-        raise TypeError(
-            f"keys input ({keys.__class__.__name__}) must have an `argsort` method"
-        )
+    keys_sorted = keys[idx_sort]
 
-    keys = keys[idx_sort]
-
-    # Get all keys
-    diffs = np.concatenate(([True], keys[1:] != keys[:-1], [True]))
+    diffs = np.concatenate(([True], keys_sorted[1:] != keys_sorted[:-1], [True]))
     indices = np.flatnonzero(diffs)
 
-    # Make a new column and set the _groups to the appropriate ColumnGroups object.
-    # Take the subset of the original keys at the indices values (group boundaries).
     out = column.__class__(column[idx_sort])
-    out._groups = ColumnGroups(out, indices=indices, keys=keys[indices[:-1]])
+    out._groups = ColumnGroups(out, indices=indices, keys=keys_sorted[indices[:-1]])
 
     return out
 
